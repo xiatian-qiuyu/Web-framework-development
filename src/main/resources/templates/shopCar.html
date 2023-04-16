@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>briup-电子商务-购物车</title>
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}">
+    <base th:href="${#request.getScheme()+'://'+#request.getServerName()+':'+#request.getServerPort()+#request.getContextPath()+'/'}">
+    <script type="text/javascript" th:src="@{js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/bootstrap.js}"></script>
+    <script type="text/javascript" th:src="@{js/estore.js}"></script>
+</head>
+
+<body>
+<a href="#top" alt="回到顶部" class="toTop">
+    <button class="btn btn-top"><span class="glyphicon glyphicon-chevron-up"></span></button>
+</a>
+<div th:replace="~{common/common::bar}"></div>
+
+<div class="head">
+    <div class="row clearfix">
+        <div class="col-md-3 column">
+            <img th:src="@{images/logo.png}" class="logo">
+        </div>
+        <div class="col-md-6 column">
+            <div class="input-group search">
+                <input id="searchShopName" type="text" class="form-control" placeholder="请输入你要检索的书名"
+                       style="padding: 20px">
+                <span class="input-group-btn">
+						<button class="btn btn-search" type="button" onclick="searchShop()"><span
+                                class="glyphicon glyphicon-search"></span></button>
+					</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="nav">
+    <div class="col-md-2 column  type" data-toggle="collapse"
+         href="#typeMenu">购物车
+    </div>
+</div>
+<div class="body">
+    <form th:action="@{/order/advanceOrder}" method="post">
+
+        <div class="table-shopCar">
+            <div class="table_head row ">
+                <span style="width: 20px">
+                </span>
+                <span class="col-md-2 column">缩略图</span>
+                <span class="col-md-4 column">商品</span>
+                <span class="col-md-1 column">单价(元)</span>
+                <span class="col-md-2 column">数量</span>
+                <span class="col-md-1 column">小计(元)</span>
+                <span class="col-md-1 column">操作</span>
+            </div>
+
+            <!-- 如果shopCarList为空-->
+            <div class="table_body " th:if="${shopCarList.isEmpty()}">
+                <a th:href="@{/searchShop}" style="color: #2e6da4 !important;display: block;text-align: center">购物车中暂无商品，先去挑选心仪的商品吧</a>
+            </div>
+            <div class="table_body " th:if="${!shopCarList.isEmpty()}">
+                <div class="row" th:each="shopCar:${shopCarList}">
+                    <div>
+                        <p style=" margin-top: 40px; float: left">
+                            <input style="height: 15px;width: 15px;"
+                                   type="checkbox" class="ids" value=""
+                                   name="ids"
+                                   th:value="${shopCar.id}"></p>
+
+                    </div>
+                    <div class="col-md-2 column">
+                        <a th:href="@{/shop/toViewShop(shopId=${shopCar.shop.id})}">
+                            <img class="img-thumbnail shop-img" th:src="${shopCar.shop.img}">
+                        </a>
+
+                    </div>
+                    <div class="col-md-4 column ">
+                        <p style="overflow: hidden;text-overflow: ellipsis; white-space: nowrap;">
+                            <sapn th:text="${shopCar.shop.name}"></sapn>
+                        </p>
+                    </div>
+
+                    <div class="col-md-1 column book-price" th:if="${shopCar.shop.discount}"
+                         th:text="${shopCar.shop.discountPrice}">
+                    </div>
+                    <div class="col-md-1 column book-price" th:if="${!shopCar.shop.discount}"
+                         th:text="${shopCar.shop.sellingPrice}">
+                    </div>
+                    <div class="col-md-2 column booknum">
+                        <button type="button" class="btn btn-primary btn-sm add" id="addNum">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                        <span class="btn value" th:text="${shopCar.num}"></span>
+                        <button type="button" class="btn btn-primary btn-sm sub" id="subNum">
+                            <span class="glyphicon glyphicon-minus"></span>
+                        </button>
+                    </div>
+                    <div class="col-md-1 column book-price-sum"></div>
+                    <div class="col-md-1 column" style="padding: 36px 0px">
+                        <button type="button" class="btn btn-danger delShopCar"><span
+                                class="glyphicon glyphicon-trash"></span></button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="allBottom" th:if="${!shopCarList.isEmpty()}">
+            <p class="caozuo">
+                <button type="submit" id="goToAdd">去结算</button>
+            </p>
+            <p>
+                <button type="button" class="btn btn-success " id="batch">移除</button>
+            </p>
+            <p>
+                <button type="button" class="btn btn-danger" id="choose">全选</button>
+            </p>
+
+            <span>已选择<font id="book-num" style="color: #b11e22;">0</font>
+                件商品&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总价(不含运费)：¥<font id="price-num" style="color: #b11e22;"> 0.00
+                </font>元
+            </span>
+        </div>
+    </form>
+</div>
+
+<div th:replace="~{common/common::footbar}"></div>
+</div>
+</body>
+<script>
+    $(function () {
+        //初始化
+        init();
+        //全选
+        $('.ids').click(function () {
+            init();
+        })
+
+        //批量删除
+        $('#batch').click(function () {
+            //获取选中的商品id
+            var ids = [];
+            $('.ids').each(function () {
+                if ($(this).is(':checked')) {
+                    ids.push($(this).val())
+                }
+            })
+            //判断是否选中商品
+            if (ids.length === 0) {
+                alert("请选择商品")
+                return;
+            }
+            if (confirm("确定删除选中的商品?")) {
+                //点击确定后操作
+                $.ajax({
+                    type: 'get',
+                    url: 'batchDelCar?shopCarIds=' + ids,
+                    success: function () {
+                        window.location.reload()
+                    },
+                    error: function () {
+                        alert("删除失败")
+                    },
+                })
+            }
+        })
+        //单个删除
+        $('.delShopCar').click(function () {
+            //获取商品id
+            const shopId = $(this).parents(".row").children('div').children('p').children('.ids').val()
+            //获取当前行
+            var p = $(this).parents('.row')
+            //q:if (confirm("确定删除该商品?"))是什么意思
+            //a: confirm() 方法用于显示带有指定消息和 OK 及取消按钮的对话框。如果用户点击了 OK，则返回 true，否则返回 false。
+            if (confirm("确定删除该商品?")) {
+                //点击确定后操作
+                $.ajax({
+                    type: 'get',
+                    url: 'delShopCar?shopCarId=' + shopId,
+                    success: function () {
+                        window.location.reload()
+                    },
+                    error: function () {
+                        alert("删除失败")
+                    },
+                })
+            }
+        })
+    })
+
+    function init() {
+        //计算总价
+        var rows = $('.table-shopCar .table_body .row');
+        rows.each(function () {
+            //获取单价
+            var price = $(this).children('.book-price').text();
+            //获取数量
+            var num = $(this).children('.booknum').children('.value').text();
+            //计算小计
+            $(this).children('.book-price-sum').text(num * price)
+        })
+
+        var sum = 0;
+        var booknum = 0;
+        $('input[name="ids"]:checked').each(
+            function () {
+                const parent = $(this).parents(".row");
+                sum += parseFloat(parent.children('.book-price-sum').text())
+                booknum += parseInt(parent.children(".booknum").children(".value").text());
+            }
+        )
+
+        $("#price-num").text(sum);
+        $("#book-num").text(booknum);
+
+    }
+
+
+    //实现全选按钮
+    $("#choose").click(function () {
+        if ($(this).text() == "全选") {
+            $(this).text("取消全选");
+            $(".ids").prop("checked", true);
+        } else {
+            $(this).text("全选");
+            $(".ids").prop("checked", false);
+        }
+        init();
+    })
+
+    $("#goToAdd").click(function () {
+        //如果没有选择，就不submit
+        if ($('input[name="ids"]:checked').length === 0) {
+            alert("请选择商品")
+            //阻止表单提交
+            return false;
+        }
+    })
+
+    //购物车数量加载
+    $(".add").click(function () {
+        //获取当前行
+        var p = $(this).parents(".row");
+        //获取当前行的id
+        const shopId = p.children('div').children('p').children('.ids').val()
+        //获取当前行的数量
+        var value = p.children(".booknum").children(".value");
+        //判断数量是否小于10
+        if (parseInt(value.text()) < 10) {
+            //数量加1
+            const i = parseInt(value.text()) + 1
+            $.ajax({
+                type: 'get',
+                url: 'updateShopCar?shopCarId=' + shopId + "&num=" + i,
+                //q: url: 'updateShopCar?shopCarId=' + shopId+"&num="+i是什么意思
+                //a:shopCarId是购物车id，num是购物车数量
+                //q:为什么要这样写
+                //a:因为我在后台接收的是shopCarId和num
+                //q:后台怎么接收shopCarId和num
+                //a:在后台接收的时候，我用的是@RequestParam("shopCarId") Integer shopCarId,@RequestParam("num") Integer num
+                success: function () {
+                    //数量加1
+                    value.text(i)
+                    //重新加载
+                    init()
+                },
+                error: function () {
+
+                },
+            })
+        }
+
+    });
+
+    //注意，这里要用.sub,不能使用#subNum
+    $(".sub").click(function () {
+        var p = $(this).parents(".row");
+        const shopId = p.children('div').children('p').children('.ids').val()
+        var value = p.children(".booknum").children(".value");
+        if (parseInt(value.text()) > 1) {
+            const i = parseInt(value.text()) - 1
+            $.ajax({
+                type: 'get',
+                url: 'updateShopCar?shopCarId=' + shopId + "&num=" + i,
+                success: function () {
+                    value.text(i)
+                    init()
+                },
+                error: function () {
+
+                },
+            })
+        }
+    });
+
+
+</script>
+
+</html>
+

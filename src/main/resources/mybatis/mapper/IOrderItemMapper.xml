@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.mapper.IOrderItemMapper">
+    <insert id="saveOrderItem">
+        insert into t_order_item(num,order_id,shop_id)
+        values(#{num},#{order.id},#{shop.id})
+    </insert>
+    <resultMap id="OrderItem" type="com.briup.bean.OrderItem">
+        <id property="id" column="id"/>
+        <result property="num" column="num"/>
+        <association property="order" javaType="com.briup.bean.Order">
+            <id property="id" column="orderId"/>
+        </association>
+        <association property="shop" javaType="com.briup.bean.Shop">
+            <id property="id" column="shopId"/>
+            <result property="name" column="name"/>
+            <result property="img" column="img"/>
+            <result property="discount" column="discount"/>
+            <result property="discountPrice" column="discount_price"/>
+            <result property="sellingPrice" column="selling_price"/>
+            <result property="stockNum" column="stock_num"/>
+            <result property="salesVolume" column="sales_volume"/>
+            <result property="visitVolume" column="visit_volume"/>
+            <result property="info" column="info"/>
+            <result property="tags" column="tags"/>
+            <result property="store" column="store"/>
+            <result property="price" column="price"/>
+            <result property="info" column="info"/>
+            <result property="intro" column="intro"/>
+            <result property="stat" column="stat"/>
+        </association>
+    </resultMap>
+
+    <select id="findOrderItemByOrderId" resultMap="OrderItem">
+        select
+        ot.id,ot.num,ot.order_id,ot.shop_id,
+        t_order.id orderId,
+        s.id shopId, s.name, s.img, s.discount, s.discount_price, s.selling_price,
+        s.stock_num, s.sales_volume, s.visit_volume, s.info, s.tags, s.store, s.price, s.info,
+        s.intro, s.stat
+            from t_order_item ot,t_shop s,t_order
+            where order_id=#{orderId} and ot.shop_id=s.id and ot.order_id=t_order.id
+    </select>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.mapper.ICollectMapper">
+    <insert id="addCollect">
+        insert into t_collect(user_id,shop_id) values(#{userId},#{shopId})
+    </insert>
+    <delete id="deleteByCollectId">
+        delete from t_collect where id=#{id}
+    </delete>
+
+    <select id="findByUserIdAndShopId" resultType="com.briup.bean.Collect">
+
+    </select>
+
+    <resultMap id="collectList" type="com.briup.bean.Collect">
+        <id property="id" column="id"/>
+        <association javaType="com.briup.bean.Shop" property="shop">
+            <id property="id" column="shopId"/>
+            <result property="name" column="name"/>
+            <result property="img" column="img"/>
+            <result property="discount" column="discount"/>
+            <result property="discountPrice" column="discount_price"/>
+            <result property="sellingPrice" column="selling_price"/>
+            <result property="stockNum" column="stock_num"/>
+            <result property="salesVolume" column="sales_volume"/>
+            <result property="visitVolume" column="visit_volume"/>
+            <result property="info" column="info"/>
+            <result property="tags" column="tags"/>
+            <result property="store" column="store"/>
+            <result property="price" column="price"/>
+            <result property="info" column="info"/>
+            <result property="intro" column="intro"/>
+            <result property="stat" column="stat"/>
+        </association>
+        <association javaType="com.briup.bean.User" property="user">
+            <id property="id" column="userId"/>
+            <result property="loginName" column="login_name"/>
+            <result property="passwordMd5" column="password_md5"/>
+            <result property="phone" column="phone"/>
+            <result property="eMail" column="email"/>
+            <result property="address" column="address"/>
+            <result property="lock" column="is_lock"/>
+            <result property="address" column="address"/>
+        </association>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="collectList">
+        select c.id,c.user_id userId ,c.shop_id shopId ,s.id,s.name,s.img,s.discount,
+               s.discount_price,s.selling_price,s.stock_num,s.sales_volume,
+               s.visit_volume,s.info,s.tags,s.store,s.price,
+               s.info,s.intro,s.stat,u.id,u.login_name,u.password_md5,
+               u.phone,u.e_mail,u.address,u.is_lock,
+               u.address from t_collect c,t_shop s,t_user u
+                         where c.user_id=#{id} and c.shop_id=s.id and c.user_id=u.id
+    </select>
+
+
+    <select id="findCollect" resultType="int">
+        select count(*) from t_collect where user_id=#{id} and shop_id=#{shopId}
+    </select>
+</mapper>

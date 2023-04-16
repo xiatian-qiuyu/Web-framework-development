@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>briup安全中心</title>
+    <base th:href="${#request.getScheme()+'://'+#request.getServerName()+':'+#request.getServerPort()+#request.getContextPath()+'/'}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/bootstrap.min.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{css/index.css}">
+    <script type="text/javascript" th:src="@{js/jquery.min.js}"></script>
+    <script type="text/javascript" th:src="@{js/bootstrap.js}"></script>
+
+</head>
+<body>
+<div th:replace="~{common/common::bar}"></div>
+<!--头部-->
+<div class="head">
+    <div class="row clearfix">
+        <div class="col-md-3 column">
+            <img th:src="@{images/logo.png}" class="logo">
+        </div>
+    </div>
+</div>
+
+<div class="nav">
+    <div class="col-md-2 column  type" data-toggle="collapse"
+         href="#typeMenu">个人中心
+    </div>
+</div>
+
+<div class="container">
+    <div class="container">
+        <form th:action="@{/user/update}" method="get">
+            <span style="color: red" th:text="${msg}" #id="msg"></span>
+            <div class="row">
+                <div class="col-25">
+                    <label for="loginName">杰普账号</label>
+                </div>
+                <div class="col-75">
+                    <input type="text" id="loginName" name="loginName" readonly="readonly"
+                           th:value="${user.getLoginName()}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-25">
+                    <label for="nickName">昵称</label>
+                </div>
+                <div class="col-75">
+                    <input type="text" id="nickName" name="nickName" th:value="${user.getNickName()}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-25">
+                    <label for="password">密码</label>
+                </div>
+                <div class="col-75">
+                    <input type="password" id="password" name="password" th:value="${user.getPasswordMd5()}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-25">
+                    <label for="eMail">邮箱</label>
+                </div>
+                <div class="col-75">
+                    <input type="text" id="eMail" name="eMail" th:value="${user.getEMail()}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-25">
+                    <label for="phone">手机号码</label>
+                </div>
+                <div class="col-75">
+                    <input type="text" id="phone" name="phone" th:value="${user.getPhone()}">
+                </div>
+            </div>
+            <div class="row">
+                <input type="submit" class="btn btn-sm btn-danger" value="修改">
+            </div>
+        </form>
+    </div>
+</div>
+<div th:replace="~{common/common::footbar}"></div>
+</body>
+</html>
+
+
+
+

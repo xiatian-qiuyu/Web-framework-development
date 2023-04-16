@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>公共部分</title>
+</head>
+
+<body>
+<div th:fragment="bar">
+    <div class="top" id="top">
+        <div class="herf" th:if="${session.loginSession} ==null">
+            <span><a th:href="@{/toLogin}">登录</a></span>
+            <span><a th:href="@{/toRegister}">注册</a></span>
+        </div>
+        <div class="herf" th:if="${session.loginSession} !=null">
+            <span><a th:href="@{/toIndex}">首页</a></span>
+            <span><a style="color: red;" th:href="@{/user/center}">个人中心</a></span>
+            <span><a th:href="@{/shippingAddress/toShippingAddress}">收货信息</a></span>
+            <span><a th:href="@{/order/findAllOrders}">我的订单</a></span>
+            <span><a th:href="@{/collect/toCollect}">我的收藏</a></span>
+            <span><a th:href="@{/user/logout}">退出</a></span>
+        </div>
+    </div>
+
+</div>
+<div th:fragment="footbar">
+    <div class="footer">
+        <div class="row clearfix icons">
+            <div class="col-md-3 column">
+                <img th:src="@{images/icons/icon_1_17.png}">
+                品目繁多 愉悦购物
+            </div>
+            <div class="col-md-3 column">
+                <img th:src="@{images/icons/icon_1_20.png}">
+                正品保障 天天低价
+            </div>
+            <div class="col-md-3 column">
+                <img th:src="@{images/icons/icon_1_23.png}">
+                极速物流 特色定制
+            </div>
+            <div class="col-md-3 column">
+                <img th:src="@{images/icons/icon_1_25.png}">
+                优质服务 以客为尊
+            </div>
+        </div>
+        <div class="links">
+            <p>
+                <span>关于我们</span>|
+                <span>联系我们</span>|
+                <span>加我我们</span>|
+                <span>友情链接</span>
+            </p>
+            <p>沪ICP备14033591号-8 杰普briup.com版权所有 杰普软件科技有限公司</p>
+
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
+

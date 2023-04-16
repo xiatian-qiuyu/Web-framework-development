@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.mapper.IUserMapper">
+    <insert id="register" parameterType="user">
+        insert into t_user(login_name,nick_name,password_md5,address,phone,e_mail,is_lock)
+        values(#{loginName},#{nickName},#{passwordMd5},#{address},#{phone},#{eMail},#{lock})
+    </insert>
+    <update id="update" parameterType="user">
+        update t_user set nick_name=#{nickName},password_md5=#{passwordMd5},address=#{address},phone=#{phone},e_mail=#{eMail},is_lock=#{lock}
+        where id=#{id}
+    </update>
+    <select id="findByLoginName" resultType="user">
+        select * from t_user where login_name= #{loginName}  or e_mail=#{loginName} or phone=#{loginName}
+    </select>
+    <select id="login" resultType="user">
+        select * from t_user where login_name= #{loginName} or e_mail=#{loginName} or phone=#{loginName} and password_md5= #{passwordMd5}
+    </select>
+</mapper>

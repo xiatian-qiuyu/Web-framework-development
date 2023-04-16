@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.mapper.IShopCarMapper">
+    <insert id="saveByshopIdUserId" parameterType="shopCar">
+        insert into t_shop_car(shop_id, user_id, num)
+        values (#{shopId}, #{userId}, #{num})
+    </insert>
+    <update id="updateShopcar">
+        update t_shop_car
+        set num= #{num}
+        where id = #{id}
+    </update>
+    <delete id="deleteById">
+        delete
+        from t_shop_car
+        where id = #{id}
+    </delete>
+    <delete id="deleteShopCarByIds" parameterType="java.util.List">
+        delete from t_shop_car where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        # q: 这里的 collection="list" item="id" open="(" close=")" separator=",">是什么意思
+        # a: collection="list"是接收一个list集合，item="id"是遍历list集合中的每一个元素，open="(" close=")"
+        separator=","是遍历的时候每个元素之间的分隔符
+        #这里的 #{id}是什么意思
+        # a:这里的 #{id}是一个占位符，用来接收foreach标签中的item属性值
+        # q:这里的List是后端的参数吗
+        # a:是的，这里的List是后端的参数
+
+    </delete>
+
+    <select id="findByShopIdAndUserId" resultType="com.briup.bean.ShopCar">
+        select id, shop_id, user_id, num
+        from t_shop_car
+        where shop_id = #{shopId}
+          and user_id = #{userId}
+    </select>
+    <select id="findByUserId" resultType="com.briup.bean.ShopCar">
+
+    </select>
+    <select id="findShopCarByIds" resultType="com.briup.bean.ShopCar"></select>
+
+    <resultMap id="ShopCarShop" type="com.briup.bean.ShopCar">
+        <id property="id" column="id"/>
+        <id property="num" column="num"/>
+        <collection ofType="com.briup.bean.Shop" property="shop">
+            <id property="id" column="shopId"/>
+            <id property="name" column="name"/>
+            <id property="img" column="img"/>
+            <id property="discount" column="discount"/>
+            <id property="discountPrice" column="discount_price"/>
+            <id property="sellingPrice" column="selling_price"/>
+            <id property="stockNum" column="stock_num"/>
+            <id property="salesVolume" column="sales_volume"/>
+            <id property="visitVolume" column="visit_volume"/>
+            <id property="info" column="info"/>
+            <id property="tags" column="tags"/>
+            <id property="store" column="store"/>
+            <id property="price" column="price"/>
+            <id property="info" column="info"/>
+            <id property="intro" column="intro"/>
+            <id property="stat" column="stat"/>
+        </collection>
+        <collection ofType="com.briup.bean.User" property="user">
+            <id property="id" column="userId"/>
+            <id property="loginName" column="login_name"/>
+            <id property="passwordMd5" column="password_md5"/>
+            <id property="phone" column="phone"/>
+            <id property="eMail" column="email"/>
+            <id property="address" column="address"/>
+            <id property="lock" column="is_lock"/>
+            <id property="address" column="address"/>
+        </collection>
+    </resultMap>
+    <select id="findUserShopCar" resultMap="ShopCarShop">
+        select sc.id, sc.num, s.id shopId, s.name, s.img, s.discount, s.discount_price, s.selling_price,
+               s.stock_num, s.sales_volume, s.visit_volume, s.info, s.tags, s.store, s.price, s.info,
+               s.intro, s.stat, u.id userId, u.login_name, u.password_md5, u.phone, u.e_mail, u.address,
+               u.is_lock, u.address
+        from t_shop_car sc, t_shop s, t_user u
+        where sc.user_id = #{userId}
+        and sc.shop_id = s.id
+        and sc.user_id = u.id
+
+    </select>
+    <select id="findShopCarById" resultMap="ShopCarShop">
+        select sc.id, sc.num, s.id shopId, s.name, s.img, s.discount, s.discount_price, s.selling_price,
+               s.stock_num, s.sales_volume, s.visit_volume, s.info, s.tags, s.store, s.price, s.info,
+               s.intro, s.stat, u.id userId, u.login_name, u.password_md5, u.phone, u.e_mail, u.address,
+               u.is_lock, u.address
+        from t_shop_car sc, t_shop s, t_user u
+        where sc.id = #{id}
+        and sc.shop_id = s.id
+        and sc.user_id = u.id
+    </select>
+</mapper>
+
